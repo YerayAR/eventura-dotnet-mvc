@@ -23,6 +23,10 @@ public sealed class User
 
     private User()
     {
+        UserName = string.Empty;
+        Email = EmailAddress.Create("placeholder@example.com");
+        PasswordHash = string.Empty;
+        Role = string.Empty;
     }
 
     private User(Guid id, string userName, EmailAddress email, string passwordHash, string role)

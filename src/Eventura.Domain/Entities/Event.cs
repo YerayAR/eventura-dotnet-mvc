@@ -30,6 +30,9 @@ public sealed class Event
 
     private Event()
     {
+        Title = string.Empty;
+        Description = string.Empty;
+        Location = Location.Create("Unknown", "Unknown");
     }
 
     private Event(

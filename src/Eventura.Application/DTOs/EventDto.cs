@@ -40,7 +40,7 @@ public sealed record EventDto
 /// Límites (lo que NO debe hacer): No incluir lógica de negocio ni validaciones complejas; se delega a validators.
 /// Errores comunes: Enviar entidades de dominio en lugar de este request.
 /// </summary>
-public sealed record CreateEventRequest
+public record CreateEventRequest
 {
     public string Title { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
