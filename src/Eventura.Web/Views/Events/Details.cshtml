@@ -1,0 +1,21 @@
+@model Eventura.Web.Models.EventListItemViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+<h1>@Model.Title</h1>
+<p>@Model.Description</p>
+<p><strong>Fecha:</strong> @Model.StartDateTime.LocalDateTime.ToString("f")</p>
+<p><strong>Duración:</strong> @(Convert.ToInt32(Model.Duration.TotalMinutes)) minutos</p>
+<p><strong>Ubicación:</strong> @Model.AddressLine, @Model.City</p>
+<p><strong>Categoría:</strong> @Model.Category</p>
+<p><strong>Disponibles:</strong> @Model.RemainingCapacity</p>
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <form asp-controller="Reservations" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="EventId" value="@Model.Id" />
+        <label for="quantity">Cantidad</label>
+        <input id="quantity" name="Quantity" type="number" min="1" value="1" />
+        <button type="submit">Reservar</button>
+    </form>
+}

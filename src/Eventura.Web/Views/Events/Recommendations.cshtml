@@ -1,0 +1,32 @@
+@model Eventura.Web.Models.RecommendationViewModel
+@{
+    ViewData["Title"] = "Recomendaciones";
+}
+<h1>Recomendaciones</h1>
+<form method="get">
+    <label asp-for="City"></label>
+    <input asp-for="City" />
+
+    <label asp-for="Category"></label>
+    <select asp-for="Category" asp-items="Html.GetEnumSelectList<Eventura.Domain.Enums.EventCategory>()">
+        <option value="">Todas</option>
+    </select>
+
+    <button type="submit">Buscar</button>
+</form>
+@if (!Model.Events.Any())
+{
+    <p>No se encontraron eventos para tu búsqueda.</p>
+}
+else
+{
+    <ul>
+    @foreach (var item in Model.Events)
+    {
+        <li>
+            <strong>@item.Title</strong> - @item.StartDateTime.LocalDateTime.ToString("g") en @item.City
+            (<a asp-action="Details" asp-route-id="@item.Id">Ver</a>)
+        </li>
+    }
+    </ul>
+}

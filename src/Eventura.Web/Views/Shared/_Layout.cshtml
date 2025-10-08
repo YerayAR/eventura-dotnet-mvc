@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Eventura</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <a asp-controller="Home" asp-action="Index">Eventura</a>
+            <a asp-controller="Events" asp-action="Index">Eventos</a>
+            <a asp-controller="Reservations" asp-action="MyReservations">Mis Reservas</a>
+            <a asp-controller="Events" asp-action="Recommendations">Recomendaciones</a>
+            <a asp-controller="Admin" asp-action="Dashboard">Panel Admin</a>
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit">Cerrar sesión (@User.Identity!.Name)</button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                <a asp-controller="Account" asp-action="Register">Registrarse</a>
+            }
+        </nav>
+    </header>
+    <main>
+        @if (TempData["Success"] is string successMessage)
+        {
+            <div class="alert success">@successMessage</div>
+        }
+        @if (TempData["Error"] is string errorMessage)
+        {
+            <div class="alert error">@errorMessage</div>
+        }
+        @RenderBody()
+    </main>
+    <footer>
+        <p>&copy; @DateTime.UtcNow.Year - Eventura</p>
+    </footer>
+</body>
+</html>

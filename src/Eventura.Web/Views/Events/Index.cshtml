@@ -1,0 +1,42 @@
+@model IReadOnlyCollection<Eventura.Web.Models.EventListItemViewModel>
+@{
+    ViewData["Title"] = "Eventos";
+}
+<h1>Eventos</h1>
+@if (User.IsInRole("Organizer") || User.IsInRole("Admin"))
+{
+    <a asp-action="Create">Crear nuevo evento</a>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Fecha</th>
+            <th>Ubicación</th>
+            <th>Disponibles</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Title</td>
+            <td>@item.StartDateTime.LocalDateTime.ToString("g")</td>
+            <td>@item.AddressLine, @item.City</td>
+            <td>@item.RemainingCapacity</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Ver</a>
+                @if (User.IsInRole("Organizer") || User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" onclick="return confirm('¿Eliminar evento?');">Eliminar</button>
+                    </form>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

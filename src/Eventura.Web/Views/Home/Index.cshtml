@@ -1,0 +1,37 @@
+@model IReadOnlyCollection<Eventura.Web.Models.EventListItemViewModel>
+@{
+    ViewData["Title"] = "Próximos eventos";
+}
+<h1>Próximos eventos</h1>
+@if (!Model.Any())
+{
+    <p>No hay eventos disponibles.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Fecha</th>
+                <th>Ubicación</th>
+                <th>Disponibles</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.StartDateTime.LocalDateTime.ToString("g")</td>
+                <td>@item.AddressLine, @item.City</td>
+                <td>@item.RemainingCapacity</td>
+                <td>
+                    <a asp-controller="Events" asp-action="Details" asp-route-id="@item.Id">Ver detalles</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

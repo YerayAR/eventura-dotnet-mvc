@@ -1,0 +1,30 @@
+@model Eventura.Web.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Registro";
+}
+<h1>Registro</h1>
+<form method="post">
+    @Html.AntiForgeryToken()
+    <label asp-for="UserName"></label>
+    <input asp-for="UserName" />
+    <span asp-validation-for="UserName"></span>
+
+    <label asp-for="Email"></label>
+    <input asp-for="Email" />
+    <span asp-validation-for="Email"></span>
+
+    <label asp-for="Password"></label>
+    <input asp-for="Password" type="password" />
+    <span asp-validation-for="Password"></span>
+
+    <label asp-for="Role"></label>
+    <select asp-for="Role">
+        <option value="User">Usuario</option>
+        <option value="Organizer">Organizador</option>
+    </select>
+
+    <button type="submit">Registrarse</button>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

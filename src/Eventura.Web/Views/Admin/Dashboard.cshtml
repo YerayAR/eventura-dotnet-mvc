@@ -1,0 +1,11 @@
+@model Eventura.Web.Models.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Panel de administración";
+}
+<h1>Panel de administración</h1>
+<ul>
+    <li>Total de eventos: <strong>@Model.TotalEvents</strong></li>
+    <li>Eventos próximos: <strong>@Model.UpcomingEvents</strong></li>
+    <li>Reservas totales: <strong>@Model.TotalReservations</strong></li>
+    <li>Reservas canceladas: <strong>@Model.CancelledReservations</strong></li>
+</ul>

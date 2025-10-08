@@ -1,0 +1,33 @@
+@model IReadOnlyCollection<Eventura.Web.Models.ReservationListItemViewModel>
+@{
+    ViewData["Title"] = "Mis reservas";
+}
+<h1>Mis reservas</h1>
+@if (!Model.Any())
+{
+    <p>No tienes reservas registradas.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Evento</th>
+                <th>Fecha</th>
+                <th>Cantidad</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EventTitle</td>
+                <td>@item.ReservedAt.LocalDateTime.ToString("g")</td>
+                <td>@item.Quantity</td>
+                <td>@(item.IsCancelled ? "Cancelada" : "Activa")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

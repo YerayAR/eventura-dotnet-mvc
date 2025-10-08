@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Eventura.Application/Eventura.Application.csproj" />
+    <ProjectReference Include="../Eventura.Infrastructure/Eventura.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
