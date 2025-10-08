@@ -98,13 +98,3 @@ El proyecto es funcional y sirve como base para ampliar modulos avanzados (notif
 ## Licencia
 
 MIT
-
-## Checklist de esta iteracion
-
-- [x] Comentarios XML /// en clases clave de Web, Application, Domain e Infrastructure.
-- [x] Comentarios internos por metodo con Contexto / Intencion / Pasos / Validaciones / Manejo de errores.
-- [x] Regiones `#region Aprendizaje` agregadas en controladores, casos de uso, entidades, repositorios y middleware.
-- [x] TODO(aprendizaje) distribuidos como ejercicios guiados.
-- [x] README ampliado con ejecucion rapida, verificacion y troubleshooting.
-- [x] Tests con narrativa Given/When/Then y concepto validado.
-- [x] Arquitectura, nombres publicos y rutas conservados sin modificaciones.
