@@ -1,21 +1,75 @@
+@using System.Globalization
 @model Eventura.Web.Models.EventListItemViewModel
 @{
     ViewData["Title"] = Model.Title;
+    var currentCulture = CultureInfo.CurrentUICulture;
+    var isSoldOut = Model.RemainingCapacity <= 0;
 }
-<h1>@Model.Title</h1>
-<p>@Model.Description</p>
-<p><strong>Fecha:</strong> @Model.StartDateTime.LocalDateTime.ToString("f")</p>
-<p><strong>Duración:</strong> @(Convert.ToInt32(Model.Duration.TotalMinutes)) minutos</p>
-<p><strong>Ubicación:</strong> @Model.AddressLine, @Model.City</p>
-<p><strong>Categoría:</strong> @Model.Category</p>
-<p><strong>Disponibles:</strong> @Model.RemainingCapacity</p>
-@if (User.Identity?.IsAuthenticated ?? false)
-{
-    <form asp-controller="Reservations" asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="EventId" value="@Model.Id" />
-        <label for="quantity">Cantidad</label>
-        <input id="quantity" name="Quantity" type="number" min="1" value="1" />
-        <button type="submit">Reservar</button>
-    </form>
-}
+
+<article class="content-card">
+    <header class="stack">
+        <span class="pill">Detalle de evento</span>
+        <h1 class="section-title">@Model.Title</h1>
+        <p class="section-subtitle">@Model.Description</p>
+        <div class="tags">
+            <span class="badge">@Model.Category</span>
+            <span class="chip neutral">
+                @Model.StartDateTime.LocalDateTime.ToString("dddd d 'de' MMMM '·' HH:mm", currentCulture)
+            </span>
+            <span class="chip neutral">
+                @(Convert.ToInt32(Model.Duration.TotalMinutes)) minutos
+            </span>
+        </div>
+    </header>
+
+    <section class="grid two" aria-label="Información relevante">
+        <div class="stack">
+            <h2 class="section-title" style="font-size:1.1rem;">Ubicación</h2>
+            <p>@Model.AddressLine<br />@Model.City</p>
+            <p class="section-subtitle">
+                Recomendamos llegar 15 minutos antes para registro y acreditaciones.
+            </p>
+        </div>
+        <div class="stack">
+            <h2 class="section-title" style="font-size:1.1rem;">Disponibilidad</h2>
+            <p class="status @(isSoldOut ? "danger" : "success")">
+                <span aria-hidden="true">●</span>
+                @(isSoldOut ? "Aforo completo" : $"{Model.RemainingCapacity} plazas disponibles")
+            </p>
+            <p class="section-subtitle">
+                Las reservas se confirman automáticamente y recibirás un correo de verificación.
+            </p>
+        </div>
+    </section>
+
+    <footer class="hero-actions">
+        <a class="btn btn-outline" asp-controller="Events" asp-action="Index">Volver al listado</a>
+        @if (!Model.IsCancelled && !isSoldOut && (User.Identity?.IsAuthenticated ?? false))
+        {
+            <form asp-controller="Reservations" asp-action="Create" method="post" class="form" data-loading="true" style="max-width:320px;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="EventId" value="@Model.Id" />
+                <div class="form-group">
+                    <label for="quantity">Cantidad</label>
+                    <input id="quantity" name="Quantity" type="number" min="1" max="@Model.RemainingCapacity" value="1" required />
+                    <span class="input-help">Se descontará del aforo restante inmediatamente.</span>
+                </div>
+                <button type="submit" class="btn btn-primary">Confirmar reserva</button>
+            </form>
+        }
+        else if (Model.IsCancelled)
+        {
+            <span class="chip warning">Evento cancelado</span>
+        }
+        else if (isSoldOut)
+        {
+            <span class="chip warning">Aforo completo</span>
+        }
+        else
+        {
+            <a class="btn btn-primary" asp-controller="Account" asp-action="Login">
+                Inicia sesión para reservar
+            </a>
+        }
+    </footer>
+</article>

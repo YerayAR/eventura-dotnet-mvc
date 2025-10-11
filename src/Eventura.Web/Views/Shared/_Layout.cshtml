@@ -1,47 +1,94 @@
+@using System.Globalization
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Eventura - Plataforma moderna para gestionar eventos, reservas y experiencias en vivo." />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="theme-color" content="#2563eb" />
     <title>@ViewData["Title"] - Eventura</title>
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav>
-            <a asp-controller="Home" asp-action="Index">Eventura</a>
-            <a asp-controller="Events" asp-action="Index">Eventos</a>
-            <a asp-controller="Reservations" asp-action="MyReservations">Mis Reservas</a>
-            <a asp-controller="Events" asp-action="Recommendations">Recomendaciones</a>
-            <a asp-controller="Admin" asp-action="Dashboard">Panel Admin</a>
-            @if (User.Identity?.IsAuthenticated ?? false)
-            {
-                <form asp-controller="Account" asp-action="Logout" method="post">
-                    @Html.AntiForgeryToken()
-                    <button type="submit">Cerrar sesión (@User.Identity!.Name)</button>
-                </form>
-            }
-            else
-            {
-                <a asp-controller="Account" asp-action="Login">Iniciar sesión</a>
-                <a asp-controller="Account" asp-action="Register">Registrarse</a>
-            }
-        </nav>
+<body class="app-shell">
+    <a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+    <header class="app-header">
+        <div class="app-nav" role="navigation" aria-label="Navegación principal">
+            <a class="brand" asp-controller="Home" asp-action="Index">
+                <span class="brand-icon" aria-hidden="true">ev</span>
+                Eventura
+            </a>
+            <button class="nav-toggle" type="button" data-nav-toggle aria-controls="main-navigation" aria-expanded="false" aria-label="Abrir menú">
+                <span class="sr-only">Abrir menú</span>
+                ☰
+            </button>
+            <div class="nav-links" id="main-navigation" data-open="false">
+                <a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a>
+                <a class="nav-link" asp-controller="Events" asp-action="Index">Eventos</a>
+                <a class="nav-link" asp-controller="Reservations" asp-action="MyReservations">Mis reservas</a>
+                <a class="nav-link" asp-controller="Events" asp-action="Recommendations">Recomendaciones</a>
+                <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">Panel admin</a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="nav-link" asp-controller="Import" asp-action="Index">🌐 Importar eventos</a>
+                }
+                <div class="nav-auth">
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        var initials = User.Identity!.Name?.Length switch
+                        {
+                            >= 2 => User.Identity.Name![..2].ToUpper(CultureInfo.InvariantCulture),
+                            1 => (User.Identity.Name![0] + "•").ToUpper(CultureInfo.InvariantCulture),
+                            _ => "EV"
+                        };
+                        <span class="avatar" aria-hidden="true">@initials</span>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="nav-form">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="nav-button">Cerrar sesión</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                        <a class="nav-link nav-cta" asp-controller="Account" asp-action="Register">Crear cuenta</a>
+                    }
+                </div>
+            </div>
+        </div>
     </header>
-    <main>
-        @if (TempData["Success"] is string successMessage)
-        {
-            <div class="alert success">@successMessage</div>
-        }
-        @if (TempData["Error"] is string errorMessage)
-        {
-            <div class="alert error">@errorMessage</div>
-        }
-        @RenderBody()
+    <main class="main" id="main-content" tabindex="-1">
+        <div class="container">
+            @if (TempData["Success"] is string successMessage)
+            {
+                <div class="alert alert-success" role="status">
+                    <span aria-hidden="true">✅</span>
+                    <div>@successMessage</div>
+                </div>
+            }
+            @if (TempData["Error"] is string errorMessage)
+            {
+                <div class="alert alert-error" role="alert">
+                    <span aria-hidden="true">⚠️</span>
+                    <div>@errorMessage</div>
+                </div>
+            }
+            @if (TempData["Warning"] is string warningMessage)
+            {
+                <div class="alert alert-warning" role="status">
+                    <span aria-hidden="true">🟡</span>
+                    <div>@warningMessage</div>
+                </div>
+            }
+            @RenderBody()
+        </div>
     </main>
-    <footer>
-        <p>&copy; @DateTime.UtcNow.Year - Eventura</p>
+    <footer class="footer">
+        <p>&copy; @DateTime.UtcNow.Year <span>Eventura</span> · Crear experiencias que inspiran</p>
     </footer>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

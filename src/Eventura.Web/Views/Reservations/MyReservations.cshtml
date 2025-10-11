@@ -1,33 +1,48 @@
+@using System.Globalization
 @model IReadOnlyCollection<Eventura.Web.Models.ReservationListItemViewModel>
 @{
     ViewData["Title"] = "Mis reservas";
+    var currentCulture = CultureInfo.CurrentUICulture;
 }
-<h1>Mis reservas</h1>
+
+<section class="section-heading">
+    <div>
+        <p class="pill">Seguimiento personal</p>
+        <h1 class="section-title">Mis reservas</h1>
+        <p class="section-subtitle">
+            Consulta tus inscripciones activas, identifica aforos completos y mantén control de tu agenda.
+        </p>
+    </div>
+    <a class="btn btn-outline" asp-controller="Events" asp-action="Index">Explorar eventos</a>
+</section>
+
 @if (!Model.Any())
 {
-    <p>No tienes reservas registradas.</p>
+    <div class="empty-state">
+        <h2>Aún no tienes reservas</h2>
+        <p>Descubre eventos destacados y confirma tu asistencia en segundos.</p>
+        <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Ver próximos eventos</a>
+    </div>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Evento</th>
-                <th>Fecha</th>
-                <th>Cantidad</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.EventTitle</td>
-                <td>@item.ReservedAt.LocalDateTime.ToString("g")</td>
-                <td>@item.Quantity</td>
-                <td>@(item.IsCancelled ? "Cancelada" : "Activa")</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <article class="content-card">
+        <div class="timeline" aria-label="Historial de reservas">
+            @foreach (var reservation in Model.OrderByDescending(r => r.ReservedAt))
+            {
+                <div class="timeline-item">
+                    <h2 class="timeline-title">@reservation.EventTitle</h2>
+                    <p class="timeline-date">
+                        Reservado el @reservation.ReservedAt.LocalDateTime.ToString("dd MMM yyyy · HH:mm", currentCulture)
+                    </p>
+                    <div class="tags">
+                        <span class="badge">Cantidad: @reservation.Quantity</span>
+                        <span class="chip @(reservation.IsCancelled ? "warning" : "primary")">
+                            @(reservation.IsCancelled ? "Cancelada" : "Activa")
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    </article>
 }

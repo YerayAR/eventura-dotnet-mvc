@@ -1,42 +1,146 @@
+@using System.Globalization
 @model IReadOnlyCollection<Eventura.Web.Models.EventListItemViewModel>
 @{
     ViewData["Title"] = "Eventos";
+    var currentCulture = CultureInfo.CurrentUICulture;
+    var canManage = User.IsInRole("Organizer") || User.IsInRole("Admin");
 }
-<h1>Eventos</h1>
-@if (User.IsInRole("Organizer") || User.IsInRole("Admin"))
+
+<section class="section-heading">
+    <div>
+        <p class="pill">Panel de eventos</p>
+        <h1 class="section-title">Catálogo completo</h1>
+        <p class="section-subtitle">
+            Administra tus experiencias, consulta disponibilidad y toma acción con un clic.
+        </p>
+    </div>
+    <div class="hero-actions">
+        <a class="btn btn-outline" asp-controller="Home" asp-action="Index">Volver al inicio</a>
+        @if (canManage)
+        {
+            <a class="btn btn-primary" asp-action="Create">Crear evento</a>
+        }
+    </div>
+</section>
+
+<div class="filters" role="search">
+    <label class="filter-group" for="events-search">
+        <span>Buscar</span>
+        <input id="events-search" type="search" placeholder="Título o ciudad" autocomplete="off" data-event-search />
+    </label>
+    <label class="filter-group" for="events-category">
+        <span>Categoría</span>
+        <select id="events-category" data-event-category>
+            <option value="all">Todas</option>
+            @foreach (var category in Enum.GetValues<Eventura.Domain.Enums.EventCategory>())
+            {
+                <option value="@category">@category</option>
+            }
+        </select>
+    </label>
+    <label class="filter-group" for="events-status">
+        <span>Estado</span>
+        <select id="events-status" data-event-status>
+            <option value="all">Todos</option>
+            <option value="available">Con cupo</option>
+            <option value="full">Agotado</option>
+            <option value="cancelled">Cancelado</option>
+        </select>
+    </label>
+</div>
+
+@if (!Model.Any())
 {
-    <a asp-action="Create">Crear nuevo evento</a>
+    <div class="empty-state" data-empty-state>
+        <h2>No hay eventos configurados</h2>
+        <p>Comienza creando un evento para activar el flujo de reservas y seguimiento.</p>
+        @if (canManage)
+        {
+            <a class="btn btn-primary" asp-action="Create">Crear evento</a>
+        }
+    </div>
 }
-<table class="table">
-    <thead>
-        <tr>
-            <th>Título</th>
-            <th>Fecha</th>
-            <th>Ubicación</th>
-            <th>Disponibles</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.Title</td>
-            <td>@item.StartDateTime.LocalDateTime.ToString("g")</td>
-            <td>@item.AddressLine, @item.City</td>
-            <td>@item.RemainingCapacity</td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                @if (User.IsInRole("Organizer") || User.IsInRole("Admin"))
+else
+{
+    <div class="table-wrapper">
+        <div class="table-responsive">
+            <table class="table" data-event-list>
+                <thead>
+                    <tr>
+                        <th scope="col">Evento</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Ubicación</th>
+                        <th scope="col">Capacidad</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col" aria-label="Acciones"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model.OrderByDescending(e => e.StartDateTime))
                 {
-                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" onclick="return confirm('¿Eliminar evento?');">Eliminar</button>
-                    </form>
+                    var status = item.IsCancelled
+                        ? "cancelled"
+                        : item.RemainingCapacity <= 0
+                            ? "full"
+                            : "available";
+                    <tr data-event-card
+                        data-event-title="@item.Title.ToLowerInvariant()"
+                        data-event-city="@item.City.ToLowerInvariant()"
+                        data-event-category="@item.Category"
+                        data-event-status="@status">
+                        <td>
+                            <div class="stack" style="gap:0.25rem;">
+                                <strong>@item.Title</strong>
+                                <span class="section-subtitle">@item.Description</span>
+                            </div>
+                        </td>
+                        <td>
+                            @item.StartDateTime.LocalDateTime.ToString("dd MMM yyyy · HH:mm", currentCulture)
+                        </td>
+                        <td>@item.AddressLine<br /><span class="section-subtitle">@item.City</span></td>
+                        <td>
+                            <span class="status @(item.RemainingCapacity > 0 ? "success" : "danger")">
+                                <span aria-hidden="true">●</span>
+                                @(item.RemainingCapacity > 0 ? $"{item.RemainingCapacity} disponibles" : "Agotado")
+                            </span>
+                        </td>
+                        <td>
+                            @if (item.IsCancelled)
+                            {
+                                <span class="chip warning">Cancelado</span>
+                            }
+                            else
+                            {
+                                <span class="chip primary">Activo</span>
+                            }
+                        </td>
+                        <td class="table-actions">
+                            <a class="btn btn-ghost" asp-action="Details" asp-route-id="@item.Id">Detalles</a>
+                            @if (canManage)
+                            {
+                                <a class="btn btn-outline" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" data-confirm="¿Eliminar el evento? Esta acción no se puede deshacer." data-loading="true">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
                 }
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="empty-state" data-empty-state style="display:none;">
+        <h2>Sin resultados</h2>
+        <p>Prueba combinando otros filtros o limpiando la búsqueda.</p>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        window.Eventura = window.Eventura ?? {};
+        window.Eventura.events = { filtersEnabled: true };
+    </script>
+}

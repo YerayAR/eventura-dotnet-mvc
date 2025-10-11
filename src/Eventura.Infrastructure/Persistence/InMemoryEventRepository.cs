@@ -105,4 +105,17 @@ public sealed class InMemoryEventRepository : IEventRepository
         _store.Events[@event.Id] = @event;
         return Task.CompletedTask;
     }
+
+    public Task<IReadOnlyList<Event>> GetByTitleAsync(string title, CancellationToken cancellationToken = default)
+    {
+        // Contexto: Búsqueda de eventos por título para evitar duplicados.
+        // Intención: Encontrar eventos con títulos similares o exactos.
+        // Pasos: 1) Filtrar eventos por título; 2) Retornar lista.
+        // Validaciones: Comparación case-insensitive.
+        // Manejo de errores: Retorna lista vacía si no encuentra coincidencias.
+        var events = _store.Events.Values
+            .Where(e => e.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        return Task.FromResult<IReadOnlyList<Event>>(events);
+    }
 }

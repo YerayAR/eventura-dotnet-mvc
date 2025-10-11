@@ -25,4 +25,5 @@ public interface IEventRepository
         string? city,
         Eventura.Domain.Enums.EventCategory? category,
         CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Event>> GetByTitleAsync(string title, CancellationToken cancellationToken = default);
 }

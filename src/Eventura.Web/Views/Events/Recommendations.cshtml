@@ -1,32 +1,98 @@
+@using System.Globalization
 @model Eventura.Web.Models.RecommendationViewModel
 @{
     ViewData["Title"] = "Recomendaciones";
+    var currentCulture = CultureInfo.CurrentUICulture;
+    var hasResults = Model.Events.Any();
 }
-<h1>Recomendaciones</h1>
-<form method="get">
-    <label asp-for="City"></label>
-    <input asp-for="City" />
 
-    <label asp-for="Category"></label>
-    <select asp-for="Category" asp-items="Html.GetEnumSelectList<Eventura.Domain.Enums.EventCategory>()">
-        <option value="">Todas</option>
-    </select>
+<section class="section-heading">
+    <div>
+        <p class="pill">Sugerencias personalizadas</p>
+        <h1 class="section-title">Eventos alineados a tus preferencias</h1>
+        <p class="section-subtitle">
+            Ajusta los filtros para descubrir experiencias relevantes según tu ciudad o categoría favorita.
+        </p>
+    </div>
+</section>
 
-    <button type="submit">Buscar</button>
-</form>
-@if (!Model.Events.Any())
+<article class="content-card">
+    <form method="get" class="form form-grid" role="search" aria-label="Filtrar recomendaciones">
+        <div class="form-group">
+            <label asp-for="City">Ciudad</label>
+            <input asp-for="City" placeholder="Ej. Madrid, Bogotá, CDMX" />
+            <span class="input-help">Especifica la ciudad para afinar la selección.</span>
+            <span asp-validation-for="City" class="field-validation-error"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Category">Categoría</label>
+            <select asp-for="Category" asp-items="Html.GetEnumSelectList<Eventura.Domain.Enums.EventCategory>()">
+                <option value="">Cualquiera</option>
+            </select>
+        </div>
+        <div class="hero-actions" style="justify-content:flex-start;">
+            <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+            <a class="btn btn-outline" asp-action="Recommendations">Limpiar</a>
+        </div>
+    </form>
+</article>
+
+@if (!hasResults)
 {
-    <p>No se encontraron eventos para tu búsqueda.</p>
+    <div class="empty-state">
+        <h2>No encontramos coincidencias</h2>
+        <p>Prueba con otra ciudad o amplía la categoría para descubrir más alternativas.</p>
+        <a class="btn btn-outline" asp-controller="Events" asp-action="Index">Ver todos los eventos</a>
+    </div>
 }
 else
 {
-    <ul>
-    @foreach (var item in Model.Events)
-    {
-        <li>
-            <strong>@item.Title</strong> - @item.StartDateTime.LocalDateTime.ToString("g") en @item.City
-            (<a asp-action="Details" asp-route-id="@item.Id">Ver</a>)
-        </li>
-    }
-    </ul>
+    <div class="card-grid">
+        @foreach (var item in Model.Events.OrderBy(e => e.StartDateTime))
+        {
+            <article class="card">
+                <header class="stack" style="gap:0.4rem;">
+                    <div class="tags">
+                        <span class="badge">@item.Category</span>
+                        <span class="chip neutral">@item.City</span>
+                    </div>
+                    <h2>@item.Title</h2>
+                </header>
+                <p>@item.Description</p>
+                <dl class="card-meta">
+                    <div>
+                        <dt class="sr-only">Fecha</dt>
+                        <dd>@item.StartDateTime.LocalDateTime.ToString("dd MMM yyyy · HH:mm", currentCulture)</dd>
+                    </div>
+                    <div>
+                        <dt class="sr-only">Ubicación</dt>
+                        <dd>@item.AddressLine</dd>
+                    </div>
+                </dl>
+                <div class="section-heading" style="margin:0;">
+                    <p class="section-subtitle">Disponibilidad</p>
+                    <span class="status @(item.RemainingCapacity > 0 ? "success" : "danger")">
+                        <span aria-hidden="true">●</span>
+                        @(item.RemainingCapacity > 0 ? $"{item.RemainingCapacity} lugares" : "Completo")
+                    </span>
+                </div>
+                <div class="hero-actions" style="margin-top:1rem;">
+                    <a class="btn btn-outline" asp-action="Details" asp-route-id="@item.Id">Ver detalles</a>
+                    @if (item.RemainingCapacity > 0 && (User.Identity?.IsAuthenticated ?? false))
+                    {
+                        <form asp-controller="Reservations" asp-action="Create" method="post" data-loading="true">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="EventId" value="@item.Id" />
+                            <input type="hidden" name="Quantity" value="1" />
+                            <button type="submit" class="btn btn-primary">Reservar</button>
+                        </form>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

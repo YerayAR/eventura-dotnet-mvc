@@ -105,7 +105,7 @@ public sealed class Event
         // Manejo de errores: Lanza DomainValidationException ante datos inválidos o capacidad insuficiente.
         Validate(title, description, startDateTime, duration, capacity);
 
-        if (capacity < _reservations.Count)
+        if (capacity < _reservations.Where(r => !r.IsCancelled).Sum(r => r.Quantity))
         {
             throw new DomainValidationException("Capacity cannot be below existing reservations.");
         }
@@ -129,7 +129,7 @@ public sealed class Event
         IsCancelled = true;
     }
 
-    public int RemainingCapacity => Capacity - _reservations.Count(r => !r.IsCancelled);
+    public int RemainingCapacity => Capacity - _reservations.Where(r => !r.IsCancelled).Sum(r => r.Quantity);
 
     public Reservation Reserve(User user, int quantity)
     {

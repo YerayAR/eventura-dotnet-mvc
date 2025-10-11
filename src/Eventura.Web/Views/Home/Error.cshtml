@@ -1,9 +1,20 @@
 @model Eventura.Web.Models.ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = "Se produjo un error";
 }
-<h1>Ha ocurrido un error.</h1>
-@if (Model.ShowRequestId)
-{
-    <p>Id de seguimiento: <strong>@Model.RequestId</strong></p>
-}
+
+<section class="content-card" style="max-width:560px; margin:0 auto; text-align:center;">
+    <span class="pill">Algo salió mal</span>
+    <h1 class="section-title">Ups, esto no debería haber pasado</h1>
+    <p class="section-subtitle">
+        Nuestro equipo técnico ya fue notificado. Intenta refrescar la página o vuelve al inicio para continuar navegando.
+    </p>
+    @if (Model.ShowRequestId)
+    {
+        <p class="chip neutral">Id de correlación: @Model.RequestId</p>
+    }
+    <div class="hero-actions" style="justify-content:center;">
+        <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Ir al inicio</a>
+        <a class="btn btn-outline" asp-controller="Home" asp-action="Index" asp-route-support="true">Contactar soporte</a>
+    </div>
+</section>

@@ -125,12 +125,15 @@ app.MapControllerRoute(
 using (var scope = app.Services.CreateScope())
 {
     // Contexto: Inicializacion de datos al arrancar la aplicacion.
-    // Intencion: Sembrar un usuario administrador para desarrollo seguro.
-    // Pasos: 1) Resolver IAuthService; 2) Invocar EnsureSeedUserAsync; 3) Manejar resultados.
+    // Intencion: Sembrar un usuario administrador y eventos de ejemplo.
+    // Pasos: 1) Resolver servicios; 2) Crear usuario admin; 3) Importar eventos populares.
     // Validaciones: Los secretos reales no se guardan aqui; solo credenciales de desarrollo.
     // Manejo de errores: Excepcion detiene arranque para evitar estados inconsistentes.
     var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+    var importService = scope.ServiceProvider.GetRequiredService<ExternalEventImportService>();
+    
     await EnsureSeedUserAsync(authService);
+    await EnsureSeedEventsAsync(importService);
 }
 
 app.Run();
@@ -153,6 +156,28 @@ static async Task EnsureSeedUserAsync(IAuthService authService)
     if (!adminResult.Succeeded && !string.Equals(adminResult.Error, "Email is already registered.", StringComparison.OrdinalIgnoreCase))
     {
         throw new InvalidOperationException($"Failed to seed admin user: {adminResult.Error}");
+    }
+}
+
+static async Task EnsureSeedEventsAsync(ExternalEventImportService importService)
+{
+    // Contexto: Sembrar eventos de ejemplo al arrancar la aplicacion.
+    // Intencion: Proporcionar contenido inicial para demostrar la funcionalidad.
+    // Pasos: 1) Importar eventos populares; 2) Manejar errores silenciosamente.
+    // Validaciones: No es critico si falla, solo mejora la experiencia inicial.
+    // Manejo de errores: Log pero no interrumpe el arranque de la aplicacion.
+    try
+    {
+        var result = await importService.ImportPopularEventsAsync(3);
+        if (result.Succeeded && result.Data > 0)
+        {
+            Console.WriteLine($"✅ Imported {result.Data} sample events from external sources");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠️ Could not import sample events: {ex.Message}");
+        // No relanzar - los eventos de ejemplo no son criticos
     }
 }
 

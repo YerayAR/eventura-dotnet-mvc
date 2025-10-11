@@ -2,23 +2,41 @@
 @{
     ViewData["Title"] = "Iniciar sesión";
 }
-<h1>Iniciar sesión</h1>
-<form method="post">
-    @Html.AntiForgeryToken()
-    <label asp-for="UserNameOrEmail"></label>
-    <input asp-for="UserNameOrEmail" />
-    <span asp-validation-for="UserNameOrEmail"></span>
 
-    <label asp-for="Password"></label>
-    <input asp-for="Password" type="password" />
-    <span asp-validation-for="Password"></span>
+<section class="content-card" style="max-width:520px; margin:0 auto;">
+    <header class="stack">
+        <span class="pill">Bienvenido de nuevo</span>
+        <h1 class="section-title">Inicia sesión</h1>
+        <p class="section-subtitle">
+            Accede a tu panel para gestionar eventos, reservas y configuraciones de cuenta.
+        </p>
+    </header>
+    <form method="post" class="form" data-loading="true">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(false, "", new { @class = "alert alert-error", role = "alert" })
+        <div class="form-group">
+            <label asp-for="UserNameOrEmail"></label>
+            <input asp-for="UserNameOrEmail" autocomplete="username" />
+            <span asp-validation-for="UserNameOrEmail" class="field-validation-error"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Password"></label>
+            <input asp-for="Password" type="password" autocomplete="current-password" />
+            <span asp-validation-for="Password" class="field-validation-error"></span>
+        </div>
+        <div class="form-group">
+            <label class="section-subtitle" style="display:flex;align-items:center;gap:0.5rem;">
+                <input asp-for="RememberMe" />
+                Recuérdame en este dispositivo
+            </label>
+        </div>
+        <div class="hero-actions" style="justify-content:flex-start;">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <a class="btn btn-outline" asp-action="Register">Crear cuenta</a>
+        </div>
+    </form>
+</section>
 
-    <label>
-        <input asp-for="RememberMe" /> Recuérdame
-    </label>
-
-    <button type="submit">Entrar</button>
-</form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

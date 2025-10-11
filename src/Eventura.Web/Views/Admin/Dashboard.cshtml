@@ -2,10 +2,39 @@
 @{
     ViewData["Title"] = "Panel de administración";
 }
-<h1>Panel de administración</h1>
-<ul>
-    <li>Total de eventos: <strong>@Model.TotalEvents</strong></li>
-    <li>Eventos próximos: <strong>@Model.UpcomingEvents</strong></li>
-    <li>Reservas totales: <strong>@Model.TotalReservations</strong></li>
-    <li>Reservas canceladas: <strong>@Model.CancelledReservations</strong></li>
-</ul>
+
+<section class="section-heading">
+    <div>
+        <p class="pill">Operaciones</p>
+        <h1 class="section-title">Panel administrativo</h1>
+        <p class="section-subtitle">
+            Visualiza métricas clave y prioriza acciones para mantener la plataforma saludable y en crecimiento.
+        </p>
+    </div>
+    <a class="btn btn-outline" asp-controller="Events" asp-action="Index">Gestionar eventos</a>
+</section>
+
+<article class="content-card">
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <span class="metric-label">Eventos totales</span>
+            <span class="metric-value">@Model.TotalEvents</span>
+            <span class="section-subtitle">Incluye experiencias pasadas y activas.</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Próximos eventos</span>
+            <span class="metric-value">@Model.UpcomingEvents</span>
+            <span class="section-subtitle">Con fecha futura y cupo disponible.</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Reservas confirmadas</span>
+            <span class="metric-value">@Model.TotalReservations</span>
+            <span class="section-subtitle">Reservas activas asociadas a eventos vigentes.</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Reservas canceladas</span>
+            <span class="metric-value">@Model.CancelledReservations</span>
+            <span class="section-subtitle">Incluye cancelaciones de usuarios y administradores.</span>
+        </div>
+    </div>
+</article>

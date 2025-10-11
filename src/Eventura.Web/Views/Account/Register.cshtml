@@ -2,29 +2,49 @@
 @{
     ViewData["Title"] = "Registro";
 }
-<h1>Registro</h1>
-<form method="post">
-    @Html.AntiForgeryToken()
-    <label asp-for="UserName"></label>
-    <input asp-for="UserName" />
-    <span asp-validation-for="UserName"></span>
 
-    <label asp-for="Email"></label>
-    <input asp-for="Email" />
-    <span asp-validation-for="Email"></span>
+<section class="content-card" style="max-width:560px; margin:0 auto;">
+    <header class="stack">
+        <span class="pill">Comienza en segundos</span>
+        <h1 class="section-title">Crea tu cuenta</h1>
+        <p class="section-subtitle">
+            Accede a un panel seguro para gestionar eventos, coordinar asistentes y monitorear métricas clave.
+        </p>
+    </header>
+    <form method="post" class="form" data-loading="true">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(false, "", new { @class = "alert alert-error", role = "alert" })
+        <div class="form-grid">
+            <div class="form-group">
+                <label asp-for="UserName"></label>
+                <input asp-for="UserName" autocomplete="username" />
+                <span asp-validation-for="UserName" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" autocomplete="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" type="password" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Role">Rol</label>
+                <select asp-for="Role">
+                    <option value="User">Usuario</option>
+                    <option value="Organizer">Organizador</option>
+                </select>
+            </div>
+        </div>
+        <div class="hero-actions" style="justify-content:flex-start;">
+            <button type="submit" class="btn btn-primary">Registrarme</button>
+            <a class="btn btn-outline" asp-action="Login">Ya tengo cuenta</a>
+        </div>
+    </form>
+</section>
 
-    <label asp-for="Password"></label>
-    <input asp-for="Password" type="password" />
-    <span asp-validation-for="Password"></span>
-
-    <label asp-for="Role"></label>
-    <select asp-for="Role">
-        <option value="User">Usuario</option>
-        <option value="Organizer">Organizador</option>
-    </select>
-
-    <button type="submit">Registrarse</button>
-</form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

@@ -1,44 +1,75 @@
 @model Eventura.Web.Models.EventFormViewModel
 @{
-    ViewData["Title"] = "Crear evento";
+    ViewData["Title"] = "Editar evento";
 }
-<h1>Crear evento</h1>
-<form method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
-    <label asp-for="Title"></label>
-    <input asp-for="Title" />
-    <span asp-validation-for="Title"></span>
 
-    <label asp-for="Description"></label>
-    <textarea asp-for="Description"></textarea>
-    <span asp-validation-for="Description"></span>
+<section class="section-heading">
+    <div>
+        <p class="pill">Edición</p>
+        <h1 class="section-title">Actualiza la información clave</h1>
+        <p class="section-subtitle">
+            Ajusta fechas, capacidad o detalles operativos manteniendo la trazabilidad y las reservas existentes.
+        </p>
+    </div>
+    <a class="btn btn-outline" asp-action="Index">Volver al listado</a>
+</section>
 
-    <label asp-for="StartDateTime"></label>
-    <input asp-for="StartDateTime" type="datetime-local" />
-    <span asp-validation-for="StartDateTime"></span>
+<article class="content-card">
+    <form method="post" class="form" data-loading="true">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(false, "", new { @class = "alert alert-error", role = "alert" })
+        <input type="hidden" asp-for="Id" />
+        <div class="form-grid">
+            <div class="form-group">
+                <label asp-for="Title"></label>
+                <input asp-for="Title" />
+                <span asp-validation-for="Title" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City"></label>
+                <input asp-for="City" />
+                <span asp-validation-for="City" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AddressLine"></label>
+                <input asp-for="AddressLine" />
+                <span asp-validation-for="AddressLine" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartDateTime"></label>
+                <input asp-for="StartDateTime" type="datetime-local" />
+                <span asp-validation-for="StartDateTime" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DurationMinutes"></label>
+                <input asp-for="DurationMinutes" type="number" min="15" max="1440" />
+                <span class="input-help">Mantén la duración coherente con la experiencia.</span>
+                <span asp-validation-for="DurationMinutes" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Capacity"></label>
+                <input asp-for="Capacity" type="number" min="1" max="10000" />
+                <span class="input-help">No puede ser inferior al número de reservas confirmadas.</span>
+                <span asp-validation-for="Capacity" class="field-validation-error"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Category"></label>
+                <select asp-for="Category" asp-items="Html.GetEnumSelectList<Eventura.Domain.Enums.EventCategory>()"></select>
+                <span asp-validation-for="Category" class="field-validation-error"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description"></textarea>
+            <span asp-validation-for="Description" class="field-validation-error"></span>
+        </div>
+        <div class="hero-actions">
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <a class="btn btn-outline" asp-action="Details" asp-route-id="@Model.Id">Ver detalle</a>
+        </div>
+    </form>
+</article>
 
-    <label asp-for="DurationMinutes"></label>
-    <input asp-for="DurationMinutes" type="number" />
-    <span asp-validation-for="DurationMinutes"></span>
-
-    <label asp-for="City"></label>
-    <input asp-for="City" />
-    <span asp-validation-for="City"></span>
-
-    <label asp-for="AddressLine"></label>
-    <input asp-for="AddressLine" />
-    <span asp-validation-for="AddressLine"></span>
-
-    <label asp-for="Capacity"></label>
-    <input asp-for="Capacity" type="number" />
-    <span asp-validation-for="Capacity"></span>
-
-    <label asp-for="Category"></label>
-    <select asp-for="Category" asp-items="Html.GetEnumSelectList<Eventura.Domain.Enums.EventCategory>()"></select>
-
-    <button type="submit">Guardar</button>
-</form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

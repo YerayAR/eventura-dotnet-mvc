@@ -42,6 +42,9 @@ public static class DependencyInjection
         services.AddSingleton<IEmailSender, LoggingEmailSender>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
 
+        services.AddHttpClient<IExternalEventsService, ExternalEventsService>();
+        services.AddScoped<ExternalEventImportService>();
+        
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IReservationService, ReservationService>();
         services.AddScoped<IAuthService, AuthService>();

@@ -1,5 +1,15 @@
 @{
     ViewData["Title"] = "Acceso denegado";
 }
-<h1>Acceso denegado</h1>
-<p>No tienes permisos suficientes para acceder a esta sección.</p>
+
+<section class="content-card" style="max-width:480px; margin:0 auto; text-align:center;">
+    <span class="pill">Permisos insuficientes</span>
+    <h1 class="section-title">No tienes acceso</h1>
+    <p class="section-subtitle">
+        Ponte en contacto con el administrador del evento para solicitar los permisos adecuados o inicia sesión con otra cuenta.
+    </p>
+    <div class="hero-actions" style="justify-content:center;">
+        <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Cambiar de usuario</a>
+        <a class="btn btn-outline" asp-controller="Home" asp-action="Index">Volver al inicio</a>
+    </div>
+</section>

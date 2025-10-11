@@ -1,0 +1,175 @@
+@{
+    ViewData["Title"] = "Importar eventos externos";
+}
+
+<div class="page-header">
+    <h1>🌐 Importar eventos externos</h1>
+    <p class="page-subtitle">Enriquece tu catálogo con eventos de fuentes externas</p>
+</div>
+
+<div class="import-dashboard">
+    <div class="import-cards">
+        <div class="import-card">
+            <div class="import-card-header">
+                <div class="import-icon popular">🏆</div>
+                <h2>Eventos populares</h2>
+            </div>
+            <p class="import-description">
+                Importa los eventos más populares y destacados desde diversas fuentes.
+                Perfectos para atraer más audiencia a tu plataforma.
+            </p>
+            <form asp-action="ImportPopular" method="post" class="import-form" data-loading>
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="maxEvents">Número de eventos a importar</label>
+                    <select name="maxEvents" id="maxEvents" class="form-control">
+                        <option value="3">3 eventos</option>
+                        <option value="5" selected>5 eventos</option>
+                        <option value="8">8 eventos</option>
+                        <option value="10">10 eventos</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span class="btn-icon">⭐</span>
+                    Importar eventos populares
+                </button>
+            </form>
+        </div>
+
+        <div class="import-card">
+            <div class="import-card-header">
+                <div class="import-icon location">📍</div>
+                <h2>Eventos por ubicación</h2>
+            </div>
+            <p class="import-description">
+                Encuentra y importa eventos específicos de una ciudad o región.
+                Ideal para contenido local relevante.
+            </p>
+            <form asp-action="ImportByLocation" method="post" class="import-form" data-loading>
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="location">Ubicación</label>
+                    <select name="location" id="location" class="form-control" required>
+                        <option value="">Selecciona una ubicación</option>
+                        <option value="Madrid">Madrid, España</option>
+                        <option value="Barcelona">Barcelona, España</option>
+                        <option value="Valencia">Valencia, España</option>
+                        <option value="Sevilla">Sevilla, España</option>
+                        <option value="Bilbao">Bilbao, España</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="maxEventsLocation">Número de eventos</label>
+                    <select name="maxEvents" id="maxEventsLocation" class="form-control">
+                        <option value="5">5 eventos</option>
+                        <option value="10" selected>10 eventos</option>
+                        <option value="15">15 eventos</option>
+                        <option value="20">20 eventos</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-block">
+                    <span class="btn-icon">🗺️</span>
+                    Importar por ubicación
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="import-info">
+        <div class="info-card">
+            <h3>📊 Vista previa de datos disponibles</h3>
+            <div id="preview-data" class="preview-container">
+                <div class="loading-placeholder">
+                    <div class="loading-spinner"></div>
+                    <p>Cargando información de APIs externas...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="import-notes">
+    <h3>ℹ️ Información importante</h3>
+    <ul>
+        <li><strong>Duplicados:</strong> El sistema detecta y evita automáticamente eventos duplicados.</li>
+        <li><strong>Calidad:</strong> Solo se importan eventos con información completa y fechas válidas.</li>
+        <li><strong>Categorías:</strong> Los eventos se clasifican automáticamente según su contenido.</li>
+        <li><strong>Fuentes:</strong> Los eventos provienen de APIs verificadas y fuentes confiables.</li>
+    </ul>
+</div>
+
+@section Scripts {
+    <script>
+        // Cargar vista previa de datos disponibles
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('@Url.Action("Preview", "Import")');
+                const data = await response.json();
+                
+                const previewContainer = document.getElementById('preview-data');
+                
+                if (data.success) {
+                    previewContainer.innerHTML = `
+                        <div class="preview-stats">
+                            <div class="stat">
+                                <span class="stat-number">${data.totalAvailable}</span>
+                                <span class="stat-label">Eventos disponibles</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">${data.categories.length}</span>
+                                <span class="stat-label">Categorías</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">${data.locations.length}</span>
+                                <span class="stat-label">Ubicaciones</span>
+                            </div>
+                        </div>
+                        <div class="preview-details">
+                            <h4>📍 Ubicaciones disponibles</h4>
+                            <div class="location-tags">
+                                ${data.locations.map(loc => `<span class="tag">${loc}</span>`).join('')}
+                            </div>
+                            <h4>🏷️ Categorías disponibles</h4>
+                            <div class="category-tags">
+                                ${data.categories.map(cat => `<span class="tag">${cat}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    previewContainer.innerHTML = `
+                        <div class="error-message">
+                            <p>❌ ${data.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('preview-data').innerHTML = `
+                    <div class="error-message">
+                        <p>⚠️ Error cargando vista previa de datos</p>
+                    </div>
+                `;
+            }
+        });
+
+        // Actualizar vista previa cuando cambie la ubicación
+        document.getElementById('location').addEventListener('change', async function() {
+            if (!this.value) return;
+            
+            try {
+                const response = await fetch(`@Url.Action("Preview", "Import")?location=${encodeURIComponent(this.value)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const statNumber = document.querySelector('.stat-number');
+                    if (statNumber) {
+                        statNumber.textContent = data.totalAvailable;
+                        statNumber.parentElement.classList.add('updated');
+                        setTimeout(() => statNumber.parentElement.classList.remove('updated'), 1000);
+                    }
+                }
+            } catch (error) {
+                console.warn('Error actualizando vista previa:', error);
+            }
+        });
+    </script>
+}
