@@ -1,0 +1,17 @@
+Contact: mailto:yera217@gmail.com
+Contact: https://github.com/YerayAR/eventura-dotnet-mvc/security/advisories/new
+Expires: 2026-01-13T23:59:59.000Z
+Encryption: https://keys.openpgp.org/search?q=yera217@gmail.com
+Preferred-Languages: es, en
+Canonical: https://eventura.com/.well-known/security.txt
+Policy: https://github.com/YerayAR/eventura-dotnet-mvc/blob/main/SECURITY.md
+Hiring: https://github.com/YerayAR/eventura-dotnet-mvc/blob/main/CONTRIBUTING.md
+
+# Eventura Security Policy
+# Report security vulnerabilities responsibly
+# Please include:
+# - Detailed steps to reproduce
+# - Impact assessment
+# - Suggested mitigation
+# Allow 72 hours for initial response
+# Allow 90 days for coordinated disclosure
