@@ -99,6 +99,38 @@ app.UseRouting();
 app.UseRateLimiter();
 app.UseCookiePolicy();
 
+// Security Headers Middleware
+app.Use(async (context, next) =>
+{
+    // Add comprehensive security headers
+    var securityConfig = app.Configuration.GetSection("Security");
+    
+    context.Response.Headers["X-Frame-Options"] = securityConfig["XFrameOptions"] ?? "DENY";
+    context.Response.Headers["X-Content-Type-Options"] = securityConfig["XContentTypeOptions"] ?? "nosniff";
+    context.Response.Headers["Referrer-Policy"] = securityConfig["ReferrerPolicy"] ?? "strict-origin-when-cross-origin";
+    context.Response.Headers["Permissions-Policy"] = securityConfig["PermissionsPolicy"] ?? "camera=(), microphone=(), geolocation=()";
+    context.Response.Headers["X-Permitted-Cross-Domain-Policies"] = "none";
+    context.Response.Headers["Cross-Origin-Embedder-Policy"] = "require-corp";
+    context.Response.Headers["Cross-Origin-Opener-Policy"] = "same-origin";
+    context.Response.Headers["Cross-Origin-Resource-Policy"] = "same-origin";
+    
+    if (!app.Environment.IsDevelopment())
+    {
+        var csp = securityConfig["ContentSecurityPolicy"];
+        if (!string.IsNullOrEmpty(csp))
+        {
+            context.Response.Headers["Content-Security-Policy"] = csp;
+        }
+    }
+    
+    // Remove server information disclosure
+    context.Response.Headers.Remove("Server");
+    context.Response.Headers.Remove("X-Powered-By");
+    context.Response.Headers.Remove("X-AspNet-Version");
+    
+    await next().ConfigureAwait(false);
+});
+
 app.Use(async (context, next) =>
 {
     // Contexto: Middleware para propagar el identificador de correlacion.
