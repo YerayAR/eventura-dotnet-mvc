@@ -1,4 +1,6 @@
-# Multi-stage Dockerfile for Eventura ASP.NET Core MVC
+# Multi-stage Dockerfile for Even
+
+tura ASP.NET Core MVC
 # Optimized for security, performance, and minimal image size
 
 # Base runtime stage

@@ -117,6 +117,20 @@ else
     app.UseDeveloperExceptionPage();
 }
 
+// Health check endpoint before HTTPS redirection for Docker/K8s
+app.MapWhen(
+    context => context.Request.Path.StartsWithSegments("/health") ||
+               context.Request.Path.StartsWithSegments("/health/ready") ||
+               context.Request.Path.StartsWithSegments("/health/live"),
+    healthApp =>
+    {
+        healthApp.UseRouting();
+        healthApp.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    });
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
