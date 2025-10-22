@@ -43,8 +43,8 @@ COPY --from=build /app/publish /app
 RUN chown -R eventura:eventura /app
 RUN chmod -R 755 /app
 
-# Switch to non-root user
-USER eventura
+# Temporarily run as root for debugging
+# USER eventura
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
