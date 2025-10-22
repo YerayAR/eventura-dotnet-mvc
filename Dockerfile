@@ -10,7 +10,7 @@ RUN addgroup -g 1001 eventura \
     && adduser -D -u 1001 -G eventura eventura \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache curl tzdata \
+    && apk add --no-cache curl tzdata icu-libs icu-data-full \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 # Set timezone
