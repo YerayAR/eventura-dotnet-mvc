@@ -52,7 +52,10 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 # Set environment variables
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=http://+:8080;https://+:8081
+ENV PORT=8080
+ENV ASPNETCORE_URLS=http://+:${PORT}
 ENV DOTNET_EnableDiagnostics=0
+
+EXPOSE ${PORT}
 
 ENTRYPOINT ["dotnet", "Eventura.Web.dll"]
