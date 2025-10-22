@@ -3,36 +3,73 @@
     ViewData["Title"] = "Iniciar sesión";
 }
 
-<section class="content-card" style="max-width:520px; margin:0 auto;">
+<section class="content-card login-card">
     <header class="stack">
-        <span class="pill">Bienvenido de nuevo</span>
+        <span class="pill">
+            <i data-lucide="sparkles" class="icon-sm"></i>
+            Bienvenido de nuevo
+        </span>
         <h1 class="section-title">Inicia sesión</h1>
         <p class="section-subtitle">
             Accede a tu panel para gestionar eventos, reservas y configuraciones de cuenta.
         </p>
     </header>
-    <form method="post" class="form" data-loading="true">
+    
+    <form method="post" class="form form-animated" data-loading="true">
         @Html.AntiForgeryToken()
-        @Html.ValidationSummary(false, "", new { @class = "alert alert-error", role = "alert" })
+        
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="alert alert-error animated-alert" role="alert">
+                <i data-lucide="alert-circle" class="icon-md"></i>
+                <div class="alert-content">
+                    <strong>Error de autenticación</strong>
+                    @Html.ValidationSummary(false, "", new { @class = "validation-list" })
+                </div>
+            </div>
+        }
+        
         <div class="form-group">
-            <label asp-for="UserNameOrEmail"></label>
-            <input asp-for="UserNameOrEmail" autocomplete="username" />
+            <label asp-for="UserNameOrEmail">
+                <i data-lucide="user" class="icon-sm"></i>
+                <span asp-for="UserNameOrEmail"></span>
+            </label>
+            <div class="input-wrapper">
+                <input asp-for="UserNameOrEmail" autocomplete="username" placeholder="tu@email.com o usuario" />
+            </div>
             <span asp-validation-for="UserNameOrEmail" class="field-validation-error"></span>
         </div>
+        
         <div class="form-group">
-            <label asp-for="Password"></label>
-            <input asp-for="Password" type="password" autocomplete="current-password" />
+            <label asp-for="Password">
+                <i data-lucide="lock" class="icon-sm"></i>
+                <span asp-for="Password"></span>
+            </label>
+            <div class="input-wrapper">
+                <input asp-for="Password" type="password" autocomplete="current-password" placeholder="••••••••" />
+            </div>
             <span asp-validation-for="Password" class="field-validation-error"></span>
         </div>
-        <div class="form-group">
-            <label class="section-subtitle" style="display:flex;align-items:center;gap:0.5rem;">
-                <input asp-for="RememberMe" />
-                Recuérdame en este dispositivo
+        
+        <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+                <input asp-for="RememberMe" type="checkbox" />
+                <span class="checkbox-text">
+                    <i data-lucide="check" class="icon-sm"></i>
+                    Recuérdame en este dispositivo
+                </span>
             </label>
         </div>
-        <div class="hero-actions" style="justify-content:flex-start;">
-            <button type="submit" class="btn btn-primary">Entrar</button>
-            <a class="btn btn-outline" asp-action="Register">Crear cuenta</a>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i data-lucide="log-in" class="icon-sm"></i>
+                Entrar
+            </button>
+            <a class="btn btn-outline btn-lg" asp-action="Register">
+                <i data-lucide="user-plus" class="icon-sm"></i>
+                Crear cuenta
+            </a>
         </div>
     </form>
 </section>
