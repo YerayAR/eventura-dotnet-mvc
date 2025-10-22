@@ -1,0 +1,17 @@
+services:
+  # Eventura .NET MVC Application
+  - type: web
+    name: eventura-app
+    env: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ASPNETCORE_HTTPS_PORT
+        value: 8080
+    healthCheckPath: /health
+    autoDeploy: true
