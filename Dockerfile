@@ -42,7 +42,6 @@ RUN dotnet publish "Eventura.Web.csproj" \
     --no-restore \
     --runtime linux-musl-x64 \
     --self-contained false \
-    /p:PublishReadyToRun=true \
     /p:DebugType=None \
     /p:DebugSymbols=false
 
